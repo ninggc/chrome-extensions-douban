@@ -1,36 +1,12 @@
 <html>
   <head>
     <meta charset="UTF-8">
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="js/jquery-3.7.1.min.js"></script>
   </head>
   <body>
-    <h1>Hello Extensions Louis</h1>
+    <h1>Hon 3</option>
+    </select>
     <button id="toggleButton">启用查找电影名称</button>
     <script src="popup.js"></script>
-    <script>
-      let key = 'pop:douban:enable'
-      $(document).ready(function() {
-        let isEnabled = localStorage.getItem(key) === 'true';
-
-        $('#toggleButton').text(isEnabled ? '禁用查找电影名称' : '启用查找电影名称');
-
-        $('#toggleButton').click(function() {
-          isEnabled = !isEnabled;
-          localStorage.setItem(key, isEnabled);
-          $(this).text(isEnabled ? '禁用查找电影名称' : '启用查找电影名称');
-
-          if (isEnabled && window.location.href.includes('bilibili.com/movie')) {
-            const movieTitleElement = $('.movie-title');
-            if (movieTitleElement.length) {
-              console.log('电影名称:', movieTitleElement.text());
-            } else {
-              console.log('未找到电影名称');
-            }
-          } else if (!isEnabled) {
-            console.log('查找电影名称功能已禁用');
-          }
-        });
-      });
-    </script>
   </body>
 </html>
