@@ -51,8 +51,8 @@ function bindEventListener(dataList) {
         if (data.parentDiv) {
 
             data.parentDiv.addEventListener('mouseenter', (event) => {
-                console.log('鼠标悬浮:', data.title, data);
                 mouseEnterTime = Date.now();
+                console.log('鼠标悬浮:', data.title, mouseEnterTime, data);
                 if (data.title) {
                     const currentTime = Date.now();
                     if (currentTime - lastPopupTime >= POPUP_INTERVAL) {
@@ -69,8 +69,9 @@ function bindEventListener(dataList) {
 
             data.parentDiv.addEventListener('mouseleave', () => {
                 const mouseLeaveTime = Date.now();
+                console.log('鼠标离开:', data.title, mouseLeaveTime);
                 setTimeout(() => {
-                    let interval = mouseLeaveTime - mouseEnterTime;
+                    let interval = Date.now() - mouseEnterTime;
                     console.log('hide popup', data.title, interval, mouseLeaveTime, mouseEnterTime);
                     if (interval >= 2000) { // 校验时间戳
                         popup.style.display = 'none';
