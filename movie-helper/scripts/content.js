@@ -77,7 +77,7 @@ function bindEventListener(dataList) {
 
             // 打印找到的链接、上级 div 和子 div，并修改上级 div 的背景色
             if (data.parentDiv) {
-                data.parentDiv.style.backgroundColor = 'red'; // 修改背景色为红色
+                // data.parentDiv.style.backgroundColor = 'red'; // 修改背景色为红色
             }
         }
     });
