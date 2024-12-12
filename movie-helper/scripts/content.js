@@ -23,7 +23,7 @@ function fetchDiv() {
     bilibiliData.forEach(data => {
         titleSet.add(data.title);
     });
-    console.log('newTitleSet:', bilibiliData.map(data => data.title));
+
     return bilibiliData;
 }
 
@@ -42,6 +42,8 @@ document.body.appendChild(popup);
 
 
 let mouseEnterTime;
+let lastPopupTime = 0;
+const POPUP_INTERVAL = 3000;
 
 function bindEventListener(dataList) {
     // 添加鼠标悬浮事件处理程序
@@ -52,27 +54,28 @@ function bindEventListener(dataList) {
                 console.log('鼠标悬浮:', data.title, data);
                 mouseEnterTime = Date.now();
                 if (data.title) {
-                    // 设置弹窗内容
-                    popup.innerHTML = `<button id="popupButton">跳转: ${data.title}</button>`;
-                    popup.style.display = 'block';
+                    const currentTime = Date.now();
+                    if (currentTime - lastPopupTime >= POPUP_INTERVAL) {
+                        lastPopupTime = currentTime;
+                        // 设置弹窗内容
+                        popup.innerHTML = `<iframe src="https://search.douban.com/movie/subject_search?search_text=${data.title}" width="500" height="300"></iframe>`;
+                        popup.style.display = 'block';
 
-                    // 添加按钮点击事件
-                    document.getElementById('popupButton').addEventListener('click', () => {
-                        window.open('https://search.douban.com/movie/subject_search?search_text=' + data.title);
-                    });
-
-                    popup.style.top = `${event.clientY + window.scrollY + 10}px`;
-                    popup.style.left = `${event.clientX + window.scrollX + 10}px`;
+                        popup.style.top = `${event.clientY + window.scrollY + 10}px`;
+                        popup.style.left = `${event.clientX + window.scrollX + 10}px`;
+                    }
                 }
             });
 
             data.parentDiv.addEventListener('mouseleave', () => {
-
                 const mouseLeaveTime = Date.now();
-                if (mouseLeaveTime - mouseEnterTime >= 2000) { // 校验时间戳
-                    console.log('hide popup', data.title, mouseLeaveTime, mouseEnterTime);
-                    popup.style.display = 'none';
-                }
+                setTimeout(() => {
+                    let interval = mouseLeaveTime - mouseEnterTime;
+                    console.log('hide popup', data.title, interval, mouseLeaveTime, mouseEnterTime);
+                    if (interval >= 2000) { // 校验时间戳
+                        popup.style.display = 'none';
+                    }
+                }, 2000)
             });
 
             // 打印找到的链接、上级 div 和子 div，并修改上级 div 的背景色
@@ -85,9 +88,10 @@ function bindEventListener(dataList) {
 }
 
 function run() {
-    console.log('start run')
-
     dataList = fetchDiv();
+    if (dataList.length > 0) {
+        console.log('newTitleSet:', dataList.map(data => data.title));
+    }
     bindEventListener(dataList);
 
     setTimeout(() => {
