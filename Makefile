@@ -1,6 +1,6 @@
-EXTENSION_NAME = movie-helper
+EXTENSION_NAME = web-helper
 VERSION = 0.0.1
-SRC_DIR = movie-helper
+SRC_DIR = web-helper
 DIST_DIR = build
 ZIP_FILE = $(DIST_DIR)/$(EXTENSION_NAME)-$(VERSION).zip
 

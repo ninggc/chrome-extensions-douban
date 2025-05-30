@@ -1,0 +1,19 @@
+{
+  "name": "Web 助手",
+  "description": "Base Level Extension",
+  "version": "1.0",
+  "manifest_version": 3,
+  "action": {
+    "default_popup": "index.html",
+    "default_icon": "index.png"
+  },
+  "content_scripts": [
+    {
+      "matches": ["https://www.bilibili.com/movie/*"],
+      "js": ["scripts/movie-helper.js"]
+    },{
+      "matches": ["https://www.zhihu.com"],
+      "js": ["scripts/zhihu-helper.js"]
+    }
+  ]
+}
