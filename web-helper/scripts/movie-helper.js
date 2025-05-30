@@ -28,22 +28,39 @@ function fetchDiv() {
 }
 
 
-
-// 创建一个弹窗元素
-const popup = document.createElement('div');
-popup.style.position = 'absolute';
-popup.style.backgroundColor = '#fff';
-popup.style.border = '1px solid #ccc';
-popup.style.padding = '10px';
-popup.style.boxShadow = '0 2px 10px rgba(0, 0, 0, 0.1)';
-popup.style.display = 'none';
-popup.style.zIndex = '1000';
-document.body.appendChild(popup);
-
-
 let mouseEnterTime;
 let lastPopupTime = 0;
-const POPUP_INTERVAL = 3000;
+const POPUP_INTERVAL = 1500;
+chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+    debugger
+    if (request.action === 'setResponseTime') {
+        const responseTime = request.responseTime;
+        console.log('从 popup.js 接收到的响应时间:', responseTime);
+        // 你可以在这里使用接收到的响应时间
+        POPUP_INTERVAL = responseTime;
+        sendResponse('响应时间已设置');
+    }
+});
+
+let state = {
+    'id': 0,
+    'title': '',
+    'status': 'enter',
+    'mouseEnterTime': 0,
+    'mouseLeaveTime': 0,
+}
+
+// 创建一个数字框元素
+const progressNumber = document.createElement('div');
+progressNumber.style.position = 'absolute';
+progressNumber.style.height = '20px';
+progressNumber.style.width = '40px';
+progressNumber.style.backgroundColor = '#fff';
+progressNumber.style.border = '1px solid #ccc';
+progressNumber.style.textAlign = 'center';
+progressNumber.style.lineHeight = '20px';
+progressNumber.style.zIndex = '1001';
+document.body.appendChild(progressNumber);
 
 function bindEventListener(dataList) {
     // 添加鼠标悬浮事件处理程序
@@ -51,32 +68,52 @@ function bindEventListener(dataList) {
         if (data.parentDiv) {
 
             data.parentDiv.addEventListener('mouseenter', (event) => {
+                state = {
+                    'id': state.id + 1,
+                    'title': data.title,
+                    'status': 'enter',
+                    'mouseEnterTime': Date.now(),
+                    'mouseLeaveTime': 0,
+                }
+                const id = state.id;
                 mouseEnterTime = Date.now();
                 console.log('鼠标悬浮:', data.title, mouseEnterTime, data);
-                if (data.title) {
-                    const currentTime = Date.now();
-                    if (currentTime - lastPopupTime >= POPUP_INTERVAL) {
-                        lastPopupTime = currentTime;
-                        // 设置弹窗内容
-                        popup.innerHTML = `<iframe src="https://search.douban.com/movie/subject_search?search_text=${data.title}" width="500" height="300"></iframe>`;
-                        popup.style.display = 'block';
 
-                        popup.style.top = `${event.clientY + window.scrollY + 10}px`;
-                        popup.style.left = `${event.clientX + window.scrollX + 10}px`;
+                // 显示数字框
+                progressNumber.style.top = `${event.clientY + window.scrollY + 20}px`;
+                progressNumber.style.left = `${event.clientX + window.scrollX + 20}px`;
+                progressNumber.style.display = 'block';
+                let startTime = Date.now();
+                let interval = setInterval(() => {
+                    let elapsed = Date.now() - startTime;
+                    let percentage = Math.min(100, Math.floor((elapsed / POPUP_INTERVAL) * 100));
+                    progressNumber.textContent = percentage + '%';
+                    if (percentage >= 100) {
+                        clearInterval(interval);
                     }
+                }, Math.floor(POPUP_INTERVAL / 10));
+
+                if (data.title) {
+                    setTimeout(() => {
+                        if (state.id !== id || state.status !== 'enter') {
+                            clearInterval(interval);
+                            return;
+                        }
+
+                        // 打开新标签页
+                        window.open(`https://search.douban.com/movie/subject_search?search_text=${data.title}`, '_blank');
+                        progressNumber.style.display = 'none';
+                    }, POPUP_INTERVAL);
                 }
             });
 
             data.parentDiv.addEventListener('mouseleave', () => {
-                const mouseLeaveTime = Date.now();
-                console.log('鼠标离开:', data.title, mouseLeaveTime);
-                setTimeout(() => {
-                    let interval = Date.now() - mouseEnterTime;
-                    console.log('hide popup', data.title, interval, mouseLeaveTime, mouseEnterTime);
-                    if (interval >= 2000) { // 校验时间戳
-                        popup.style.display = 'none';
-                    }
-                }, 2000)
+                state.mouseLeaveTime = Date.now();
+                state.status = 'leave';
+                console.log('鼠标离开:', data.title, state.mouseLeaveTime);
+
+                // 隐藏数字框
+                progressNumber.style.display = 'none';
             });
 
             // 打印找到的链接、上级 div 和子 div，并修改上级 div 的背景色
