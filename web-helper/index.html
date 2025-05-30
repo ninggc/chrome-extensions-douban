@@ -5,8 +5,19 @@
   </head>
   <body>
     <h1>欢迎使用</h1>
-    <label for="responseTime">响应时间（毫秒）:</label>
-    <input type="number" id="responseTime" name="responseTime" min="500" step="100"><br>
+    
+    <fieldset style="margin-bottom: 10px; border: 1px solid #ccc; padding: 10px;">
+      <legend>Douban</legend>
+      <label for="responseTime">响应时间（毫秒）:</label>
+      <input type="number" id="responseTime" name="responseTime" min="500" step="100">
+    </fieldset>
+
+    <fieldset id="group-zhihu" style="margin-bottom: 10px; border: 1px solid #ccc; padding: 10px;">
+      <legend>Zhihu</legend>
+      <button id="zhihuToggleButton">Enable</button>
+      <button id="reloadButton">reload</button>
+    </fieldset>
+
     <script src="popup.js"></script>
   </body>
 </html>

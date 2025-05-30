@@ -3,6 +3,7 @@
   "description": "Base Level Extension",
   "version": "1.0",
   "manifest_version": 3,
+  "permissions": ["storage", "tabs"],
   "action": {
     "default_popup": "index.html",
     "default_icon": "index.png"
@@ -11,8 +12,9 @@
     {
       "matches": ["https://www.bilibili.com/movie/*"],
       "js": ["scripts/movie-helper.js"]
-    },{
-      "matches": ["https://www.zhihu.com"],
+    },
+    {
+      "matches": ["https://www.zhihu.com/*"],
       "js": ["scripts/zhihu-helper.js"]
     }
   ]
